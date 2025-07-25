@@ -127,9 +127,25 @@ Main GUI class for the application. Handles webcam control, UI, preview, and ima
 
 ## resource_path Function
 
+### Purpose
+
+PyInstaller bundles your app into a single `.exe` file and **extracts all files into a temporary folder at runtime**.  
+That means regular paths like `"background1.png"` won't work once your app is compiled.
+
+The `resource_path()` function **solves this** by returning the correct path whether the app is running as:
+
+- a **regular Python script**, or  
+- a **PyInstaller `.exe`**
+
+### Function Code
 ```python
 def resource_path(relative_path):
-    """Returns absolute path to a resource, compatible with PyInstaller"""
+    """Returns absolute path to a resource, compatible with PyInstaller."""
+    try:
+        base_path = sys._MEIPASS  # PyInstaller temp directory
+    except Exception:
+        base_path = os.path.abspath(".")  # Normal dev mode
+    return os.path.join(base_path, relative_path)
 ```
 <br>
 
